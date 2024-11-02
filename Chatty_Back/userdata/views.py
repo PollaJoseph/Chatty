@@ -38,10 +38,11 @@ def signup(request):
         )
 
         return JsonResponse({
-            'message': 'User created successfully. Verification token sent to email.'
+            'message': 'User created successfully. Verification token sent to email.',
+            'user_id': user.user_id  # Add the user_id to the response
         }, status=status.HTTP_201_CREATED)
-
-    return JsonResponse({'error': 'Bad Request', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @swagger_auto_schema(
@@ -59,7 +60,7 @@ def verify_account(request):
 
     try:
         user = Users.objects.get(user_id=user_id)
-        verification_token = ResetPasswordToken.objects.get(user=user, token=token)
+        verification_token = AccountVerificationToken.objects.get(user=user, token=token)
 
         # Check if the token is expired
         if verification_token.is_expired():

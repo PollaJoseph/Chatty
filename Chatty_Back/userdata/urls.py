@@ -5,6 +5,6 @@ urlpatterns = [
     # User URLs
     path('users/login/', login, name='login'),
     path('users/signup/', signup, name='signup'),
-    path('users/verification/<str:token>/', verify_account, name='verify_account'),
+    path('users/verification/', verify_account, name='verify_account'),
     path('users/allusers/', user_list_create, name='user-list-create'),
     ]
