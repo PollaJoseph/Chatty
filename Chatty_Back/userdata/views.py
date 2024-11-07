@@ -1,13 +1,14 @@
 from django.http import JsonResponse
-from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from django.core.mail import send_mail
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view
 from Chatty_Back import settings
 from .models import Users, ResetPasswordToken, AccountVerificationToken
 from .serializer import UserSerializer
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 
 @swagger_auto_schema(
@@ -28,18 +29,33 @@ def signup(request):
         # Generate a verification token
         verification_token = AccountVerificationToken.objects.create(user=user)
 
-        # Send the token to the user’s email
-        send_mail(
-            'Account Verification',
-            f'Your verification token is: {verification_token.token}',
-            settings.DEFAULT_FROM_EMAIL,  # Replace with your sender email
-            [user.email],
-            fail_silently=False,
+        # Set email subject and context for the template
+        subject = 'Account Verification'
+        app_name = "YourAppName"  # Replace with your app's name
+        app_logo_url = "https://example.com/logo.png"  # Replace with the URL to your app's logo
+        context = {
+            'app_name': app_name,
+            'app_logo_url': app_logo_url,
+            'token': verification_token.token,
+        }
+
+        # Render the HTML template with context
+        html_content = render_to_string('verification_email.html', context)
+        text_content = strip_tags(html_content)  # Strip HTML tags for plain text version
+
+        # Send the email with both HTML and plain text
+        email = EmailMultiAlternatives(
+            subject=subject,
+            body=text_content,  # Plain text content
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[user.email]
         )
+        email.attach_alternative(html_content, "text/html")
+        email.send()
 
         return JsonResponse({
             'message': 'User created successfully. Verification token sent to email.',
-            'user_id': user.user_id  # Add the user_id to the response
+            'user_id': user.user_id
         }, status=status.HTTP_201_CREATED)
     else:
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -70,8 +86,8 @@ def verify_account(request):
         user.is_verified = True
         user.save()
 
-        # Optionally, delete the token after verification
-        verification_token.delete()
+        # Delete the token after verification
+        AccountVerificationToken.objects.filter(user=user, token=token).delete()
 
         return JsonResponse({"message": "Account verified successfully"}, status=status.HTTP_200_OK)
 
