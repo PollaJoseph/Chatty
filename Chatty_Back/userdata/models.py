@@ -1,3 +1,4 @@
+import random
 import uuid
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
 from django.db import models
@@ -38,10 +39,12 @@ class UserManager(BaseUserManager):
 
 
 class Users(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField(max_length=255, unique=True, null=True, blank=True)
-    email = models.EmailField(unique=True, max_length=255)
+
     user_id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+    username = models.CharField(max_length=255, unique=False, null=True, blank=True)
+    email = models.EmailField(unique=True, max_length=255)
     phone_number = models.CharField(max_length=11, unique=True, null=True, blank=True)
+
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     last_login = models.DateTimeField(default=timezone.now)
@@ -81,17 +84,16 @@ class BaseToken(models.Model):
             self.created_at = timezone.now()
             self.expires_at = self.created_at + timezone.timedelta(minutes=10)
 
-        # Ensure token is exactly 5 characters long
-        if len(self.token) != 5:
+
+        if len(self.token) != 4:
             raise ValidationError("Token must be 5 characters.")
 
         super().save(*args, **kwargs)
 
     def _generate_token(self):
-        # Generate a 5-character token and ensure uniqueness
+
         while True:
-            unique_id = str(uuid.uuid4())
-            token = unique_id[:5]
+            token = f"{random.randint(1000, 9999)}"
 
             if not (AccountVerificationToken.objects.filter(token=token).exists() or
                     ResetPasswordToken.objects.filter(token=token).exists()):

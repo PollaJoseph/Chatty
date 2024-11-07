@@ -4,17 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Verification</title>
+    <style>
+        .gradient-text {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #08D1C9, #213A58);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
 </head>
 <body style="font-family: Arial, sans-serif; color: #333;">
     <table style="width: 100%; text-align: center; background-color: #f5f5f5; padding: 20px;">
         <tr>
-            <td><img src="{{ app_logo_url }}" alt="{{ app_name }} Logo" style="width: 100px; height: auto;"></td>
+          <!-- replace "images/logo.png" in next line  -->
+
+            <td><img src="logo.png" alt="chatty Logo" style="width: 100px; height: auto;">
+</td>
         </tr>
         <tr>
             <td>
-                <h2 style="color: #333;">{{ app_name }}</h2>
+                <h2 class="gradient-text">Chatty App</h2>
                 <h3>Account Verification</h3>
-                <p>Thank you for signing up! Please use the token below to verify your account.</p>
+                <p>Thank you for signing up! Please use the OTP below to verify your account.</p>
             </td>
         </tr>
         <tr>
@@ -24,7 +36,7 @@
                 </div>
                 <br><br>
                 <button onclick="navigator.clipboard.writeText('{{ token }}')" 
-                        style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer;">
+                        style="background: linear-gradient(45deg, #08D1C9, #213A58); color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer;">
                     Copy Token
                 </button>
             </td>

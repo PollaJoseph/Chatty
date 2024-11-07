@@ -139,4 +139,3 @@ def user_list_create(request):
         users = Users.objects.all()
         serializer = UserSerializer(users, many=True)
         return JsonResponse(serializer.data, safe=False)
-
