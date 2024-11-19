@@ -65,6 +65,14 @@ class Users(AbstractBaseUser, PermissionsMixin):
         db_table = 'users'
 
 
+class Profile(models.Model):
+    user_id = models.OneToOneField(Users, on_delete=models.CASCADE, primary_key=True)
+    profile_picture = models.ImageField(upload_to=f'uploads/profile_picture/{user_id}/', null=True, blank=True)
+    name = models.CharField(max_length=255, null=True, blank=True)
+    bio = models.TextField(max_length=500, null=True, blank=True)
+    phone_number = models.CharField(max_length=11, null=True, blank=True)
+
+
 class BaseToken(models.Model):
     user = models.ForeignKey('Users', on_delete=models.CASCADE)
     token = models.CharField(max_length=5, unique=True)
@@ -83,7 +91,6 @@ class BaseToken(models.Model):
             self.token = self._generate_token()
             self.created_at = timezone.now()
             self.expires_at = self.created_at + timezone.timedelta(minutes=10)
-
 
         if len(self.token) != 4:
             raise ValidationError("Token must be 5 characters.")

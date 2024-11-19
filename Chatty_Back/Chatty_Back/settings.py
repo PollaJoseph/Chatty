@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'social_django',
     'rest_framework_social_oauth2',
     'drf_yasg',
+    'django_q',
 
     # Local Apps
 

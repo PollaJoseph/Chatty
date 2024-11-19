@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Users, ResetPasswordToken
+from .models import Users, Profile, ResetPasswordToken
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -22,7 +22,8 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
-class ResetPasswordTokenSerializer(serializers.ModelSerializer):
+class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ResetPasswordToken
-        fields = ['user', 'token', 'created_at']
+        model = Profile
+        fields = ['profile_picture', 'bio', 'phone_number', 'name']
+
